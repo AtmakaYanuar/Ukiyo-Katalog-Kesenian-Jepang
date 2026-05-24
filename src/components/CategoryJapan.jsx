@@ -1,15 +1,20 @@
 import React from "react";
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from "react-native";
+import {
+  Text,
+  StyleSheet,
+  ScrollView,
+  TouchableOpacity
+} from "react-native";
 
 /*
   Komponen CategoryJapan
   Fungsi:
-  - Menampilkan daftar kategori kesenian menggunakan ScrollView Horizontal
-  - Memberikan navigasi cepat bagi user berdasarkan jenis seni
+  - Menampilkan kategori
+  - Mengubah state kategori di App
 */
 
-const CategoryJapan = () => {
-  // Data kategori kesenian
+const CategoryJapan = ({ selected, setSelected }) => {
+
   const categories = [
     "🎭 Teater",
     "✍️ Kaligrafi",
@@ -19,17 +24,29 @@ const CategoryJapan = () => {
   ];
 
   return (
-    <ScrollView 
-      horizontal 
+    <ScrollView
+      horizontal
       showsHorizontalScrollIndicator={false}
       contentContainerStyle={styles.container}
     >
-      {/* Melakukan mapping data kategori ke dalam komponen tombol */}
+
       {categories.map((item, index) => (
-        <TouchableOpacity key={index} style={styles.badge}>
-          <Text style={styles.text}>{item}</Text>
+
+        <TouchableOpacity
+          key={index}
+          style={[
+            styles.badge,
+            selected === item && styles.activeBadge
+          ]}
+          onPress={() => setSelected(item)}
+        >
+          <Text style={styles.text}>
+            {item}
+          </Text>
         </TouchableOpacity>
+
       ))}
+
     </ScrollView>
   );
 };
@@ -39,6 +56,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     marginVertical: 10,
   },
+
   badge: {
     backgroundColor: "#fff",
     paddingHorizontal: 16,
@@ -46,8 +64,13 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     marginRight: 10,
     borderWidth: 1,
-    borderColor: "#e74c3c", // Outline merah agar senada dengan logo
+    borderColor: "#e74c3c",
   },
+
+  activeBadge: {
+    backgroundColor: "#F8BBD0",
+  },
+
   text: {
     fontWeight: "bold",
     color: "#2c3e50",

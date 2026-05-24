@@ -4,27 +4,31 @@ import { View, Text, StyleSheet, TextInput } from "react-native";
 /*
   Komponen Header
   Fungsi:
-  - Menampilkan identitas visual utama aplikasi (Nama & Tagline)
-  - Menyediakan kolom input (Search Bar) untuk memfilter kesenian
+  - Menampilkan identitas aplikasi
+  - Menyediakan search bar
 */
 
-const Header = () => {
+const Header = ({ searchText, setSearchText }) => {
   return (
     <View style={styles.container}>
-      {/* Judul utama dengan aksen teks Jepang */}
+
+      {/* Judul */}
       <Text style={styles.title}>UKIYO 浮世</Text>
 
-      {/* Deskripsi singkat aplikasi */}
+      {/* Subtitle */}
       <Text style={styles.subtitle}>
         Jendela Seni Tradisional Negeri Sakura
       </Text>
 
-      {/* Input pencarian dengan desain modern */}
+      {/* Search */}
       <TextInput
         style={styles.search}
         placeholder="Cari kesenian Jepang..."
-        placeholderTextColor="#95a5a6"
+        placeholderTextColor="#b48a95"
+        value={searchText}
+        onChangeText={setSearchText}
       />
+
     </View>
   );
 };
@@ -33,30 +37,48 @@ const styles = StyleSheet.create({
   container: {
     padding: 20,
     paddingTop: 50,
-    backgroundColor: "#2c3e50", // Warna biru gelap elegan
-    borderBottomLeftRadius: 15,
-    borderBottomRightRadius: 15,
-    marginBottom: 10,
+    backgroundColor: "#FADADD",
+    borderBottomLeftRadius: 25,
+    borderBottomRightRadius: 25,
+    marginBottom: 15,
+
+    shadowColor: "#d48ca3",
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowOpacity: 0.2,
+    shadowRadius: 5,
+
+    elevation: 5,
   },
+
   title: {
-    fontSize: 28,
-    color: "#e74c3c", // Warna merah matahari terbit
+    fontSize: 30,
+    color: "#C2185B",
     fontWeight: "bold",
     letterSpacing: 2,
-    marginBottom: 4,
+    marginBottom: 5,
   },
+
   subtitle: {
-    color: "#ecf0f1",
+    color: "#6D4C41",
     fontSize: 14,
-    marginBottom: 15,
+    marginBottom: 18,
     fontStyle: "italic",
   },
+
   search: {
-    backgroundColor: "#ffffff",
+    backgroundColor: "#FFF5F7",
     paddingHorizontal: 15,
-    paddingVertical: 10,
-    borderRadius: 10,
+    paddingVertical: 12,
+    borderRadius: 15,
     fontSize: 14,
+
+    borderWidth: 1,
+    borderColor: "#F8BBD0",
+
+    color: "#4e342e",
   },
 });
 
