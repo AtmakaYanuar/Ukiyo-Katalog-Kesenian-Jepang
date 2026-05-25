@@ -1,14 +1,50 @@
-import { SafeAreaView } from "react-native-safe-area-context";
+import { useRef, useEffect, useState } from "react";
 import {
+  SafeAreaView,
   View,
   Text,
   StyleSheet,
   ScrollView,
   StatusBar,
-  TouchableOpacity
+  TouchableOpacity,
+  Animated,
+  Image,
 } from "react-native";
 
+import { cultureData } from "../data/CultureData";
+
 export default function HomeScreen({ navigation }) {
+  // ANIMATION
+  const fadeAnim = useRef(new Animated.Value(0)).current;
+  const slideAnim = useRef(new Animated.Value(40)).current;
+
+  // CATEGORY
+  const [selectedCategory, setSelectedCategory] = useState("Semua");
+
+  // FILTER DATA
+  const filteredData =
+    selectedCategory === "Semua"
+      ? cultureData
+      : cultureData.filter(
+          (item) => item.category === selectedCategory
+        );
+
+  useEffect(() => {
+    Animated.parallel([
+      Animated.timing(fadeAnim, {
+        toValue: 1,
+        duration: 800,
+        useNativeDriver: true,
+      }),
+
+      Animated.timing(slideAnim, {
+        toValue: 0,
+        duration: 700,
+        useNativeDriver: true,
+      }),
+    ]).start();
+  }, []);
+
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar backgroundColor="#FFF0F5" barStyle="dark-content" />
@@ -16,58 +52,134 @@ export default function HomeScreen({ navigation }) {
       <ScrollView showsVerticalScrollIndicator={false}>
 
         {/* HEADER */}
-        <View style={styles.header}>
+        <Animated.View
+          style={[
+            styles.header,
+            {
+              opacity: fadeAnim,
+            },
+          ]}
+        >
           <View>
             <Text style={styles.title}>
               UKIYO <Text style={styles.kanji}>浮世</Text>
             </Text>
+
             <Text style={styles.subtitle}>
               Jendela Seni Tradisional Jepang
             </Text>
           </View>
 
           <View style={styles.avatarPlaceholder} />
-        </View>
+        </Animated.View>
 
         {/* BANNER */}
-        <View style={styles.banner}>
+        <Animated.View
+          style={[
+            styles.banner,
+            {
+              transform: [{ translateY: slideAnim }],
+            },
+          ]}
+        >
           <View style={styles.bannerCircle} />
 
           <Text style={styles.bannerText}>
-            Explore the Beauty of{"\n"}Sakura Season ✨
+            Explore the Beauty of{"\n"}Japanese Culture ✨
           </Text>
 
-          {/* 🔥 INI YANG DIUBAH (BISA DIKLIK) */}
           <TouchableOpacity
             style={styles.exploreBtn}
             onPress={() => navigation.navigate("Explore")}
           >
-            <Text style={styles.exploreBtnText}>Explore</Text>
+            <Text style={styles.exploreBtnText}>
+              Explore
+            </Text>
           </TouchableOpacity>
-        </View>
+        </Animated.View>
 
-        {/* CONTENT */}
-        <Text style={styles.sectionTitle}>Budaya Populer</Text>
+        {/* CATEGORY */}
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          style={styles.categoryContainer}
+        >
+          {[
+              "Semua",
+              "Tradisional",
+              "Teater",
+              "Festival",
+              "Musik",
+              "Tari",
+            ].map((item) => (
+            <TouchableOpacity
+              key={item}
+              style={[
+                styles.categoryBtn,
+                selectedCategory === item &&
+                  styles.activeCategory,
+              ]}
+              onPress={() =>
+                setSelectedCategory(item)
+              }
+            >
+              <Text
+                style={[
+                  styles.categoryText,
+                  selectedCategory === item && {
+                    color: "white",
+                  },
+                ]}
+              >
+                {item}
+              </Text>
+            </TouchableOpacity>
+          ))}
+        </ScrollView>
 
-        <View style={styles.card}>
-          <Text style={styles.cardEmoji}>👘</Text>
-          <View style={styles.cardContent}>
-            <Text style={styles.cardTitle}>Kimono</Text>
-            <Text style={styles.cardDesc}>
-              Pakaian tradisional yang melambangkan keanggunan.
-            </Text>
-          </View>
-        </View>
+        {/* TITLE */}
+        <Text style={styles.sectionTitle}>
+          Budaya Populer
+        </Text>
 
-        <View style={styles.card}>
-          <Text style={styles.cardEmoji}>🎭</Text>
-          <View style={styles.cardContent}>
-            <Text style={styles.cardTitle}>Kabuki</Text>
-            <Text style={styles.cardDesc}>
-              Seni teater klasik dengan riasan wajah ikonik.
-            </Text>
-          </View>
-        </View>
+        {/* CARD LIST */}
+        {filteredData.map((item) => (
+          <Animated.View
+            key={item.id}
+            style={{
+              opacity: fadeAnim,
+              transform: [{ translateY: slideAnim }],
+            }}
+          >
+            <TouchableOpacity
+              style={styles.card}
+              onPress={() =>
+                navigation.navigate("Detail", {
+                  item,
+                })
+              }
+            >
+              <Image
+                source={{ uri: item.image }}
+                style={styles.cardImage}
+              />
+
+              <View style={styles.cardContent}>
+                <Text style={styles.cardTitle}>
+                  {item.title}
+                </Text>
+
+                <Text style={styles.cardCategory}>
+                  {item.category}
+                </Text>
+
+                <Text style={styles.cardDesc}>
+                  {item.desc}
+                </Text>
+              </View>
+            </TouchableOpacity>
+          </Animated.View>
+        ))}
 
       </ScrollView>
     </SafeAreaView>
@@ -75,18 +187,35 @@ export default function HomeScreen({ navigation }) {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#FFFBFC" },
+  container: {
+    flex: 1,
+    backgroundColor: "#FFFBFC",
+  },
 
   header: {
     padding: 20,
     flexDirection: "row",
     justifyContent: "space-between",
+    alignItems: "center",
     backgroundColor: "#FFF0F5",
+    borderBottomLeftRadius: 25,
+    borderBottomRightRadius: 25,
   },
 
-  title: { fontSize: 28, fontWeight: "900", color: "#880E4F" },
-  kanji: { fontSize: 20, color: "#AD1457" },
-  subtitle: { color: "#C2185B" },
+  title: {
+    fontSize: 28,
+    fontWeight: "900",
+    color: "#880E4F",
+  },
+
+  kanji: {
+    fontSize: 20,
+    color: "#AD1457",
+  },
+
+  subtitle: {
+    color: "#C2185B",
+  },
 
   avatarPlaceholder: {
     width: 45,
@@ -122,8 +251,9 @@ const styles = StyleSheet.create({
   exploreBtn: {
     marginTop: 15,
     backgroundColor: "white",
-    padding: 8,
-    borderRadius: 10,
+    paddingVertical: 10,
+    paddingHorizontal: 15,
+    borderRadius: 12,
     alignSelf: "flex-start",
   },
 
@@ -132,26 +262,70 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
 
+  categoryContainer: {
+    paddingLeft: 15,
+    marginTop: 5,
+  },
+
+  categoryBtn: {
+    backgroundColor: "#FCE4EC",
+    paddingHorizontal: 15,
+    paddingVertical: 8,
+    borderRadius: 20,
+    marginRight: 10,
+  },
+
+  activeCategory: {
+    backgroundColor: "#F06292",
+  },
+
+  categoryText: {
+    color: "#880E4F",
+    fontWeight: "600",
+  },
+
   sectionTitle: {
+    marginTop: 20,
     marginLeft: 20,
-    fontSize: 18,
+    marginBottom: 10,
+    fontSize: 20,
     fontWeight: "bold",
     color: "#4A148C",
   },
 
   card: {
-    flexDirection: "row",
     backgroundColor: "white",
-    margin: 20,
-    padding: 15,
-    borderRadius: 15,
+    marginHorizontal: 20,
+    marginBottom: 15,
+    borderRadius: 20,
+    overflow: "hidden",
+    elevation: 3,
   },
 
-  cardEmoji: { fontSize: 30, marginRight: 10 },
+  cardImage: {
+    width: "100%",
+    height: 180,
+  },
 
-  cardContent: { flex: 1 },
+  cardContent: {
+    padding: 15,
+  },
 
-  cardTitle: { fontSize: 16, fontWeight: "bold" },
+  cardTitle: {
+    fontSize: 18,
+    fontWeight: "bold",
+    color: "#333",
+  },
 
-  cardDesc: { color: "#777" },
+  cardCategory: {
+    color: "#F06292",
+    marginTop: 4,
+    fontWeight: "600",
+  },
+
+  cardDesc: {
+    color: "#777",
+    marginTop: 8,
+    lineHeight: 20,
+  },
 });

@@ -1,4 +1,5 @@
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useRef, useEffect, useState } from "react";
 import {
   View,
   Text,
