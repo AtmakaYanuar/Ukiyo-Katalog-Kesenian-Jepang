@@ -1,34 +1,92 @@
+// src/screens/ProfileScreen.jsx
+
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useRef, useEffect, useState } from "react";
+import { useState } from "react";
 import {
   View,
   Text,
   StyleSheet,
   StatusBar,
   TouchableOpacity,
-  Image
+  Image,
+  Alert
 } from "react-native";
 
+import ProfileField from "../components/ProfileField";
+
 export default function ProfileScreen() {
+
+  const [isEditing, setIsEditing] = useState(false);
+
+  const [name, setName] = useState("Gema Ramadhan");
+  const [username, setUsername] = useState("@gema_ukiyo");
+  const [bio, setBio] = useState("Cultural Explorer");
+
+  const handleSave = () => {
+    setIsEditing(false);
+    Alert.alert("Berhasil", "Profil berhasil diperbarui!");
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar backgroundColor="#FFF0F5" barStyle="dark-content" />
-      
+
       {/* HEADER */}
       <View style={styles.header}>
+
         <View style={styles.avatarContainer}>
-          <Image 
-            source={{ uri: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Felix' }} 
-            style={styles.avatar} 
+          <Image
+            source={{
+              uri: "https://api.dicebear.com/7.x/avataaars/svg?seed=Felix"
+            }}
+            style={styles.avatar}
           />
+
           <TouchableOpacity style={styles.editIcon}>
-            <Text style={{fontSize: 12}}>✏️</Text>
+            <Text style={{ fontSize: 12 }}>✏️</Text>
           </TouchableOpacity>
         </View>
-        
-        <Text style={styles.userName}>Gema Ramadhan</Text>
-        <Text style={styles.userTag}>@gema_ukiyo • Cultural Explorer</Text>
-        
+
+        {isEditing ? (
+          <>
+            <ProfileField
+              label="Nama"
+              value={name}
+              onChangeText={setName}
+            />
+
+            <ProfileField
+              label="Username"
+              value={username}
+              onChangeText={setUsername}
+            />
+
+            <ProfileField
+              label="Bio"
+              value={bio}
+              onChangeText={setBio}
+              multiline
+            />
+
+            <TouchableOpacity
+              style={styles.saveButton}
+              onPress={handleSave}
+            >
+              <Text style={styles.saveButtonText}>
+                Simpan
+              </Text>
+            </TouchableOpacity>
+          </>
+        ) : (
+          <>
+            <Text style={styles.userName}>{name}</Text>
+
+            <Text style={styles.userTag}>
+              {username} • {bio}
+            </Text>
+          </>
+        )}
+
         <View style={styles.statsContainer}>
           <View style={styles.statBox}>
             <Text style={styles.statNumber}>12</Text>
@@ -46,9 +104,17 @@ export default function ProfileScreen() {
 
       {/* MENU */}
       <View style={styles.menuContainer}>
-        <TouchableOpacity style={styles.menuItem}>
+
+        <TouchableOpacity
+          style={styles.menuItem}
+          onPress={() => setIsEditing(!isEditing)}
+        >
           <Text style={styles.menuEmoji}>👤</Text>
-          <Text style={styles.menuText}>Edit Profil</Text>
+
+          <Text style={styles.menuText}>
+            {isEditing ? "Batal Edit" : "Edit Profil"}
+          </Text>
+
           <Text style={styles.arrow}>›</Text>
         </TouchableOpacity>
 
@@ -64,8 +130,11 @@ export default function ProfileScreen() {
           <Text style={styles.arrow}>›</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={[styles.menuItem, { borderBottomWidth: 0 }]}>
+        <TouchableOpacity
+          style={[styles.menuItem, { borderBottomWidth: 0 }]}
+        >
           <Text style={styles.menuEmoji}>🚪</Text>
+
           <Text style={[styles.menuText, { color: "#D32F2F" }]}>
             Keluar
           </Text>
@@ -75,7 +144,10 @@ export default function ProfileScreen() {
       {/* FOOTER */}
       <View style={styles.footerCard}>
         <Text style={styles.appTitle}>UKIYO 浮世</Text>
-        <Text style={styles.versionText}>Version 1.0.0 Stable</Text>
+
+        <Text style={styles.versionText}>
+          Version 1.0.0 Stable
+        </Text>
       </View>
 
     </SafeAreaView>
@@ -225,5 +297,18 @@ const styles = StyleSheet.create({
     fontSize: 10,
     color: "#AD1457",
     opacity: 0.4,
+  },
+
+  saveButton: {
+    marginTop: 15,
+    backgroundColor: "#F06292",
+    paddingVertical: 10,
+    paddingHorizontal: 30,
+    borderRadius: 15,
+  },
+
+  saveButtonText: {
+    color: "white",
+    fontWeight: "bold",
   },
 });
