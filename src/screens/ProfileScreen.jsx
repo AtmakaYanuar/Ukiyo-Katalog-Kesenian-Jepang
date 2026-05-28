@@ -2,6 +2,7 @@
 
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useState } from "react";
+
 import {
   View,
   Text,
@@ -14,7 +15,7 @@ import {
 
 import ProfileField from "../components/ProfileField";
 
-export default function ProfileScreen() {
+export default function ProfileScreen({ navigation }) {
 
   const [isEditing, setIsEditing] = useState(false);
 
@@ -24,12 +25,19 @@ export default function ProfileScreen() {
 
   const handleSave = () => {
     setIsEditing(false);
-    Alert.alert("Berhasil", "Profil berhasil diperbarui!");
+
+    Alert.alert(
+      "Berhasil",
+      "Profil berhasil diperbarui!"
+    );
   };
 
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar backgroundColor="#FFF0F5" barStyle="dark-content" />
+      <StatusBar
+        backgroundColor="#FFF0F5"
+        barStyle="dark-content"
+      />
 
       {/* HEADER */}
       <View style={styles.header}>
@@ -43,7 +51,9 @@ export default function ProfileScreen() {
           />
 
           <TouchableOpacity style={styles.editIcon}>
-            <Text style={{ fontSize: 12 }}>✏️</Text>
+            <Text style={{ fontSize: 12 }}>
+              ✏️
+            </Text>
           </TouchableOpacity>
         </View>
 
@@ -79,7 +89,9 @@ export default function ProfileScreen() {
           </>
         ) : (
           <>
-            <Text style={styles.userName}>{name}</Text>
+            <Text style={styles.userName}>
+              {name}
+            </Text>
 
             <Text style={styles.userTag}>
               {username} • {bio}
@@ -88,66 +100,124 @@ export default function ProfileScreen() {
         )}
 
         <View style={styles.statsContainer}>
+
           <View style={styles.statBox}>
-            <Text style={styles.statNumber}>12</Text>
-            <Text style={styles.statLabel}>Favorit</Text>
+            <Text style={styles.statNumber}>
+              12
+            </Text>
+
+            <Text style={styles.statLabel}>
+              Favorit
+            </Text>
           </View>
 
           <View style={styles.statDivider} />
 
           <View style={styles.statBox}>
-            <Text style={styles.statNumber}>5</Text>
-            <Text style={styles.statLabel}>Event</Text>
+            <Text style={styles.statNumber}>
+              5
+            </Text>
+
+            <Text style={styles.statLabel}>
+              Event
+            </Text>
           </View>
+
         </View>
       </View>
 
       {/* MENU */}
-      <View style={styles.menuContainer}>
+<View style={styles.menuContainer}>
 
-        <TouchableOpacity
-          style={styles.menuItem}
-          onPress={() => setIsEditing(!isEditing)}
-        >
-          <Text style={styles.menuEmoji}>👤</Text>
+  {/* EDIT PROFILE */}
+  <TouchableOpacity
+    style={styles.menuItem}
+    onPress={() => setIsEditing(!isEditing)}
+  >
+    <Text style={styles.menuEmoji}>👤</Text>
 
-          <Text style={styles.menuText}>
-            {isEditing ? "Batal Edit" : "Edit Profil"}
-          </Text>
+    <Text style={styles.menuText}>
+      {isEditing ? "Batal Edit" : "Edit Profil"}
+    </Text>
 
-          <Text style={styles.arrow}>›</Text>
-        </TouchableOpacity>
+    <Text style={styles.arrow}>›</Text>
+  </TouchableOpacity>
 
-        <TouchableOpacity style={styles.menuItem}>
-          <Text style={styles.menuEmoji}>🎎</Text>
-          <Text style={styles.menuText}>Koleksi Saya</Text>
-          <Text style={styles.arrow}>›</Text>
-        </TouchableOpacity>
+  {/* KATALOG SAYA */}
+  <TouchableOpacity
+    style={styles.menuItem}
+    onPress={() =>
+      navigation.navigate("MyCatalog")
+    }
+  >
+    <Text style={styles.menuEmoji}>📚</Text>
 
-        <TouchableOpacity style={styles.menuItem}>
-          <Text style={styles.menuEmoji}>⚙️</Text>
-          <Text style={styles.menuText}>Pengaturan</Text>
-          <Text style={styles.arrow}>›</Text>
-        </TouchableOpacity>
+    <Text style={styles.menuText}>
+      Katalog Saya
+    </Text>
 
-        <TouchableOpacity
-          style={[styles.menuItem, { borderBottomWidth: 0 }]}
-        >
-          <Text style={styles.menuEmoji}>🚪</Text>
+    <Text style={styles.arrow}>›</Text>
+  </TouchableOpacity>
 
-          <Text style={[styles.menuText, { color: "#D32F2F" }]}>
-            Keluar
-          </Text>
-        </TouchableOpacity>
-      </View>
+  {/* TAMBAH KATALOG */}
+  <TouchableOpacity
+    style={styles.menuItem}
+    onPress={() =>
+      navigation.navigate("InputBlog")
+    }
+  >
+    <Text style={styles.menuEmoji}>➕</Text>
+
+    <Text style={styles.menuText}>
+      Tambah Katalog
+    </Text>
+
+    <Text style={styles.arrow}>›</Text>
+  </TouchableOpacity>
+
+  {/* PENGATURAN */}
+  <TouchableOpacity style={styles.menuItem}>
+    <Text style={styles.menuEmoji}>⚙️</Text>
+
+    <Text style={styles.menuText}>
+      Pengaturan
+    </Text>
+
+    <Text style={styles.arrow}>›</Text>
+  </TouchableOpacity>
+
+  {/* KELUAR */}
+  <TouchableOpacity
+    style={[
+      styles.menuItem,
+      { borderBottomWidth: 0 }
+    ]}
+  >
+    <Text style={styles.menuEmoji}>🚪</Text>
+
+    <Text
+      style={[
+        styles.menuText,
+        { color: "#D32F2F" }
+      ]}
+    >
+      Keluar
+    </Text>
+  </TouchableOpacity>
+
+</View>
 
       {/* FOOTER */}
       <View style={styles.footerCard}>
-        <Text style={styles.appTitle}>UKIYO 浮世</Text>
+
+        <Text style={styles.appTitle}>
+          UKIYO 浮世
+        </Text>
 
         <Text style={styles.versionText}>
           Version 1.0.0 Stable
         </Text>
+
       </View>
 
     </SafeAreaView>

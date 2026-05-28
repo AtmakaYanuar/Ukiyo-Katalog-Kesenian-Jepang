@@ -11,25 +11,30 @@ import {
   Image,
 } from "react-native";
 
-import { cultureData } from "../data/CultureData";
+import { useFocusEffect } from "@react-navigation/native";
+import { useCallback } from "react";
+
+import { getBlogs } from "../services/BlogService";
 
 export default function HomeScreen({ navigation }) {
-  // ANIMATION
+
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const slideAnim = useRef(new Animated.Value(40)).current;
 
-  // CATEGORY
-  const [selectedCategory, setSelectedCategory] = useState("Semua");
+  const [selectedCategory, setSelectedCategory] =
+    useState("Semua");
 
-  // FILTER DATA
-  const filteredData =
-    selectedCategory === "Semua"
-      ? cultureData
-      : cultureData.filter(
-          (item) => item.category === selectedCategory
-        );
+  const [blogs, setBlogs] = useState([]);
+
+  const fetchBlogs = async () => {
+    const data = await getBlogs();
+    setBlogs(data.reverse());
+  };
 
   useEffect(() => {
+
+    fetchBlogs();
+
     Animated.parallel([
       Animated.timing(fadeAnim, {
         toValue: 1,
@@ -43,11 +48,29 @@ export default function HomeScreen({ navigation }) {
         useNativeDriver: true,
       }),
     ]).start();
+
   }, []);
+
+  useFocusEffect(
+    useCallback(() => {
+      fetchBlogs();
+    }, [])
+  );
+
+  const filteredData =
+    selectedCategory === "Semua"
+      ? blogs
+      : blogs.filter(
+          (item) =>
+            item.category === selectedCategory
+        );
 
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar backgroundColor="#FFF0F5" barStyle="dark-content" />
+      <StatusBar
+        backgroundColor="#FFF0F5"
+        barStyle="dark-content"
+      />
 
       <ScrollView showsVerticalScrollIndicator={false}>
 
@@ -90,7 +113,9 @@ export default function HomeScreen({ navigation }) {
 
           <TouchableOpacity
             style={styles.exploreBtn}
-            onPress={() => navigation.navigate("Explore")}
+            onPress={() =>
+              navigation.navigate("Explore")
+            }
           >
             <Text style={styles.exploreBtnText}>
               Explore
@@ -105,13 +130,13 @@ export default function HomeScreen({ navigation }) {
           style={styles.categoryContainer}
         >
           {[
-              "Semua",
-              "Tradisional",
-              "Teater",
-              "Festival",
-              "Musik",
-              "Tari",
-            ].map((item) => (
+            "Semua",
+            "Tradisional",
+            "Teater",
+            "Festival",
+            "Musik",
+            "Tari",
+          ].map((item) => (
             <TouchableOpacity
               key={item}
               style={[
@@ -148,7 +173,9 @@ export default function HomeScreen({ navigation }) {
             key={item.id}
             style={{
               opacity: fadeAnim,
-              transform: [{ translateY: slideAnim }],
+              transform: [
+                { translateY: slideAnim },
+              ],
             }}
           >
             <TouchableOpacity
@@ -175,6 +202,16 @@ export default function HomeScreen({ navigation }) {
 
                 <Text style={styles.cardDesc}>
                   {item.desc}
+                </Text>
+
+                <Text
+                  style={{
+                    marginTop: 8,
+                    color: "#999",
+                    fontSize: 12,
+                  }}
+                >
+                  Oleh: {item.author}
                 </Text>
               </View>
             </TouchableOpacity>

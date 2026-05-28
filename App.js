@@ -3,6 +3,9 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
 import BottomNavbar from "./src/navigation/BottomNavbar";
 import DetailScreen from "./src/screens/DetailScreen";
+import InputBlogScreen from "./src/screens/InputBlogScreen";
+import MyCatalogScreen from "./src/screens/MyCatalogScreen";
+import EditBlogScreen from "./src/screens/EditBlogScreen";
 
 const Stack = createNativeStackNavigator();
 
@@ -27,6 +30,32 @@ export default function App() {
             headerStyle: {
               backgroundColor: "#FFF0F5",
             },
+          }}
+        />
+
+        {/* MyCatalog */}
+        <Stack.Screen
+          name="MyCatalog"
+          component={MyCatalogScreen}
+          options={{
+            title: "Katalog Saya",
+          }}
+        />
+
+        {/* Input */}
+        <Stack.Screen
+          name="InputBlog"
+          component={InputBlogScreen}
+          options={{
+            title: "Tambah Kesenian",
+          }}
+        />
+
+        <Stack.Screen 
+          name="EditBlog" 
+          component={EditBlogScreen} 
+          option={{
+            title: "Edit Katalog"
           }}
         />
 

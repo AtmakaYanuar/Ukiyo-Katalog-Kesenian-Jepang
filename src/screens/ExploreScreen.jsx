@@ -1,4 +1,7 @@
-import { useState, useRef, useEffect } from "react";
+import React, {
+  useState,
+  useRef,
+} from "react";
 
 import {
   SafeAreaView,
@@ -13,39 +16,71 @@ import {
   StatusBar,
 } from "react-native";
 
-import { cultureData } from "../data/CultureData";
+import {
+  useFocusEffect,
+} from "@react-navigation/native";
 
-export default function ExploreScreen({ navigation }) {
+import { useCallback } from "react";
+
+import { getBlogs } from "../services/BlogService";
+
+export default function ExploreScreen({
+  navigation,
+}) {
+
   const [search, setSearch] = useState("");
 
-  const fadeAnim = useRef(new Animated.Value(0)).current;
+  const [blogs, setBlogs] = useState([]);
+
+  const fadeAnim =
+    useRef(new Animated.Value(0)).current;
+
   const [selectedCategory, setSelectedCategory] =
-  useState("Semua");
+    useState("Semua");
 
-  useEffect(() => {
-    Animated.timing(fadeAnim, {
-      toValue: 1,
-      duration: 700,
-      useNativeDriver: true,
-    }).start();
-  }, []);
+  const fetchBlogs = async () => {
 
-  const filtered = cultureData.filter((item) => {
-  const matchSearch = item.title
-    .toLowerCase()
-    .includes(search.toLowerCase());
+    const data = await getBlogs();
 
-  const matchCategory =
-    selectedCategory === "Semua"
-      ? true
-      : item.category === selectedCategory;
+    setBlogs(data.reverse());
 
-  return matchSearch && matchCategory;
-});
+  };
+
+  useFocusEffect(
+    useCallback(() => {
+
+      fetchBlogs();
+
+      Animated.timing(fadeAnim, {
+        toValue: 1,
+        duration: 700,
+        useNativeDriver: true,
+      }).start();
+
+    }, [])
+  );
+
+  const filtered = blogs.filter((item) => {
+
+    const matchSearch = item.title
+      .toLowerCase()
+      .includes(search.toLowerCase());
+
+    const matchCategory =
+      selectedCategory === "Semua"
+        ? true
+        : item.category === selectedCategory;
+
+    return matchSearch && matchCategory;
+
+  });
 
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar backgroundColor="#FFF0F5" barStyle="dark-content" />
+      <StatusBar
+        backgroundColor="#FFF0F5"
+        barStyle="dark-content"
+      />
 
       <ScrollView showsVerticalScrollIndicator={false}>
 
@@ -78,43 +113,48 @@ export default function ExploreScreen({ navigation }) {
           onChangeText={setSearch}
           style={styles.search}
         />
+
+        {/* CATEGORY */}
         <ScrollView
-  horizontal
-  showsHorizontalScrollIndicator={false}
-  style={{ paddingLeft: 20, marginBottom: 15 }}
->
-  {[
-    "Semua",
-    "Tradisional",
-    "Teater",
-    "Festival",
-    "Musik",
-    "Tari",
-  ].map((item) => (
-    <TouchableOpacity
-      key={item}
-      style={[
-        styles.categoryBtn,
-        selectedCategory === item &&
-          styles.activeCategory,
-      ]}
-      onPress={() =>
-        setSelectedCategory(item)
-      }
-    >
-      <Text
-        style={[
-          styles.categoryText,
-          selectedCategory === item && {
-            color: "white",
-          },
-        ]}
-      >
-        {item}
-      </Text>
-    </TouchableOpacity>
-  ))}
-</ScrollView>
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          style={{
+            paddingLeft: 20,
+            marginBottom: 15,
+          }}
+        >
+          {[
+            "Semua",
+            "Tradisional",
+            "Teater",
+            "Festival",
+            "Musik",
+            "Tari",
+          ].map((item) => (
+            <TouchableOpacity
+              key={item}
+              style={[
+                styles.categoryBtn,
+                selectedCategory === item &&
+                  styles.activeCategory,
+              ]}
+              onPress={() =>
+                setSelectedCategory(item)
+              }
+            >
+              <Text
+                style={[
+                  styles.categoryText,
+                  selectedCategory === item && {
+                    color: "white",
+                  },
+                ]}
+              >
+                {item}
+              </Text>
+            </TouchableOpacity>
+          ))}
+        </ScrollView>
 
         {/* LIST */}
         {filtered.map((item) => (
@@ -122,7 +162,9 @@ export default function ExploreScreen({ navigation }) {
             key={item.id}
             style={styles.card}
             onPress={() =>
-              navigation.navigate("Detail", { item })
+              navigation.navigate("Detail", {
+                item,
+              })
             }
           >
             <Image
@@ -138,9 +180,21 @@ export default function ExploreScreen({ navigation }) {
               <Text style={styles.cardCategory}>
                 {item.category}
               </Text>
+
+              <Text
+                numberOfLines={2}
+                style={styles.cardDesc}
+              >
+                {item.desc}
+              </Text>
+
+              <Text style={styles.author}>
+                Oleh: {item.author}
+              </Text>
             </View>
           </TouchableOpacity>
         ))}
+
       </ScrollView>
     </SafeAreaView>
   );
@@ -203,7 +257,7 @@ const styles = StyleSheet.create({
 
   image: {
     width: 100,
-    height: 100,
+    height: 120,
   },
 
   textBox: {
@@ -215,26 +269,41 @@ const styles = StyleSheet.create({
   cardTitle: {
     fontSize: 18,
     fontWeight: "bold",
+    color: "#333",
   },
 
   cardCategory: {
     color: "#F06292",
     marginTop: 5,
+    fontWeight: "600",
   },
+
+  cardDesc: {
+    color: "#777",
+    marginTop: 6,
+    fontSize: 13,
+  },
+
+  author: {
+    marginTop: 8,
+    fontSize: 12,
+    color: "#999",
+  },
+
   categoryBtn: {
-  backgroundColor: "#FCE4EC",
-  paddingHorizontal: 15,
-  paddingVertical: 8,
-  borderRadius: 20,
-  marginRight: 10,
-},
+    backgroundColor: "#FCE4EC",
+    paddingHorizontal: 15,
+    paddingVertical: 8,
+    borderRadius: 20,
+    marginRight: 10,
+  },
 
-activeCategory: {
-  backgroundColor: "#F06292",
-},
+  activeCategory: {
+    backgroundColor: "#F06292",
+  },
 
-categoryText: {
-  color: "#880E4F",
-  fontWeight: "600",
-},
+  categoryText: {
+    color: "#880E4F",
+    fontWeight: "600",
+  },
 });
